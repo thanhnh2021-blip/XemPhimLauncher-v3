@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Xem Phim</string>
+    <string name="accessibility_description">Ẩn thanh địa chỉ Brave khi mở YouTube từ Xem Phim bằng một thao tác cuộn nhẹ. Không bật fullscreen video.</string>
+</resources>
