@@ -9,7 +9,6 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -19,7 +18,6 @@ import java.util.Arrays;
 public class BraveToolbarService extends AccessibilityService {
 
     private static final String TAG = "BraveToolbarService";
-
     private static final String BRAVE_PACKAGE = "com.brave.browser";
 
     private WindowManager windowManager;
@@ -32,6 +30,33 @@ public class BraveToolbarService extends AccessibilityService {
     private int nodeCounter = 0;
 
     // ============================================================
+    // SERVICE LIFECYCLE - onCreate
+    // ============================================================
+
+    @Override
+    public void onCreate() {
+
+        super.onCreate();
+
+        Log.e(TAG, "");
+        Log.e(TAG, "################################################");
+        Log.e(TAG, "### BraveToolbarService.onCreate() ###");
+        Log.e(TAG, "################################################");
+
+        Log.e(TAG,
+                "PROCESS ID = " + android.os.Process.myPid());
+
+        Log.e(TAG,
+                "PACKAGE = " + getPackageName());
+
+        Log.e(TAG,
+                "THREAD = " + Thread.currentThread().getName());
+
+        Log.e(TAG,
+                "################################################");
+    }
+
+    // ============================================================
     // SERVICE CONNECTED
     // ============================================================
 
@@ -40,18 +65,33 @@ public class BraveToolbarService extends AccessibilityService {
 
         super.onServiceConnected();
 
-        Log.d(TAG, "");
-        Log.d(TAG, "================================================");
-        Log.d(TAG, "=== SERVICE CONNECTED ===");
-        Log.d(TAG, "================================================");
+        Log.e(TAG, "");
+        Log.e(TAG, "================================================");
+        Log.e(TAG, "=== SERVICE CONNECTED ===");
+        Log.e(TAG, "================================================");
+
+        Log.e(TAG,
+                "PROCESS ID = " + android.os.Process.myPid());
+
+        Log.e(TAG,
+                "PACKAGE = " + getPackageName());
+
+        Log.e(TAG,
+                "THREAD = " + Thread.currentThread().getName());
 
         try {
 
             windowManager =
                     (WindowManager) getSystemService(WINDOW_SERVICE);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "WindowManager = " + windowManager);
+
+            if (windowManager == null) {
+
+                Log.e(TAG,
+                        "!!! WindowManager = NULL !!!");
+            }
 
             AccessibilityServiceInfo info =
                     getServiceInfo();
@@ -64,29 +104,29 @@ public class BraveToolbarService extends AccessibilityService {
                 return;
             }
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "Initial AccessibilityServiceInfo:");
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  eventTypes = " + info.eventTypes);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  feedbackType = " + info.feedbackType);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  flags = " + info.flags);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  notificationTimeout = "
                             + info.notificationTimeout);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  packageNames = "
                             + (info.packageNames == null
                             ? "NULL / ALL PACKAGES"
                             : Arrays.toString(info.packageNames)));
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  capabilities = "
                             + info.getCapabilities());
 
@@ -95,7 +135,7 @@ public class BraveToolbarService extends AccessibilityService {
                             & AccessibilityServiceInfo.CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT)
                             != 0;
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  canRetrieveWindowContent = "
                             + canRetrieveContent);
 
@@ -121,22 +161,22 @@ public class BraveToolbarService extends AccessibilityService {
 
             setServiceInfo(info);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "ServiceInfo configured successfully");
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  eventTypes = " + info.eventTypes);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  flags = " + info.flags);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  packageNames = "
                             + (info.packageNames == null
                             ? "NULL / ALL PACKAGES"
                             : Arrays.toString(info.packageNames)));
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "================================================");
 
         } catch (Exception e) {
@@ -157,8 +197,7 @@ public class BraveToolbarService extends AccessibilityService {
 
         eventCounter++;
 
-        Log.d(TAG, "");
-        Log.d(TAG,
+        Log.e(TAG,
                 "---------------- EVENT #"
                         + eventCounter
                         + " ----------------");
@@ -194,31 +233,31 @@ public class BraveToolbarService extends AccessibilityService {
                         ? "NULL"
                         : event.getContentDescription().toString();
 
-        Log.d(TAG,
+        Log.e(TAG,
                 "eventType = "
                         + event.getEventType());
 
-        Log.d(TAG,
+        Log.e(TAG,
                 "package = "
                         + packageName);
 
-        Log.d(TAG,
+        Log.e(TAG,
                 "class = "
                         + className);
 
-        Log.d(TAG,
+        Log.e(TAG,
                 "text = "
                         + text);
 
-        Log.d(TAG,
+        Log.e(TAG,
                 "contentDescription = "
                         + contentDescription);
 
-        Log.d(TAG,
+        Log.e(TAG,
                 "windowId = "
                         + event.getWindowId());
 
-        Log.d(TAG,
+        Log.e(TAG,
                 "eventTime = "
                         + event.getEventTime());
 
@@ -228,23 +267,18 @@ public class BraveToolbarService extends AccessibilityService {
 
         if (!BRAVE_PACKAGE.equals(packageName)) {
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "NOT BRAVE -> ignore event");
 
-            // IMPORTANT:
-            // Không remove overlay ở đây.
-            // Android có thể phát rất nhiều event của
-            // FreeKiosk / Xem Phim / launcher trong lúc
-            // chuyển sang Brave.
             return;
         }
 
-        Log.d(TAG, "");
-        Log.d(TAG,
+        Log.e(TAG, "");
+        Log.e(TAG,
                 "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        Log.d(TAG,
+        Log.e(TAG,
                 ">>> BRAVE DETECTED <<<");
-        Log.d(TAG,
+        Log.e(TAG,
                 "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
         handler.removeCallbacksAndMessages(null);
@@ -266,12 +300,12 @@ public class BraveToolbarService extends AccessibilityService {
 
     private void inspectBrave() {
 
-        Log.d(TAG, "");
-        Log.d(TAG,
+        Log.e(TAG, "");
+        Log.e(TAG,
                 "================================================");
-        Log.d(TAG,
+        Log.e(TAG,
                 "=== inspectBrave() START ===");
-        Log.d(TAG,
+        Log.e(TAG,
                 "================================================");
 
         try {
@@ -279,39 +313,31 @@ public class BraveToolbarService extends AccessibilityService {
             AccessibilityNodeInfo root =
                     getRootInActiveWindow();
 
-            // ----------------------------------------------------
-            // ROOT CHECK
-            // ----------------------------------------------------
-
             if (root == null) {
 
                 Log.e(TAG,
                         "!!! getRootInActiveWindow() = NULL !!!");
 
                 Log.e(TAG,
-                        "Accessibility Service cannot access "
-                                + "Brave UI tree.");
-
-                Log.d(TAG,
-                        "================================================");
+                        "Accessibility Service cannot access Brave UI tree.");
 
                 showDiagnosticOverlay();
 
                 return;
             }
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "getRootInActiveWindow() = SUCCESS");
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "root.package = "
                             + root.getPackageName());
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "root.class = "
                             + root.getClassName());
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "root.childCount = "
                             + root.getChildCount());
 
@@ -320,10 +346,11 @@ public class BraveToolbarService extends AccessibilityService {
 
             root.getBoundsInScreen(rootBounds);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "root.bounds = "
                             + rootBounds.left + ","
-                            + rootBounds.top + " - "
+                            + rootBounds.top
+                            + " - "
                             + rootBounds.right + ","
                             + rootBounds.bottom);
 
@@ -333,64 +360,65 @@ public class BraveToolbarService extends AccessibilityService {
 
             nodeCounter = 0;
 
-            Log.d(TAG, "");
-            Log.d(TAG,
+            Log.e(TAG, "");
+            Log.e(TAG,
                     "=== START NODE TRAVERSAL ===");
 
             RectInfo result =
                     findInterestingNode(root, 0);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "=== NODE TRAVERSAL FINISHED ===");
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "Total nodes visited = "
                             + nodeCounter);
 
-            // ----------------------------------------------------
-            // RESULT
-            // ----------------------------------------------------
-
             if (result != null) {
 
-                Log.d(TAG, "");
-                Log.d(TAG,
+                Log.e(TAG, "");
+                Log.e(TAG,
                         "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                Log.d(TAG,
+                Log.e(TAG,
                         ">>> POSSIBLE TOOLBAR / ADDRESS NODE <<<");
-                Log.d(TAG,
+                Log.e(TAG,
                         "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
-                Log.d(TAG,
+                Log.e(TAG,
                         "class = "
                                 + result.className);
 
-                Log.d(TAG,
+                Log.e(TAG,
                         "text = "
                                 + result.text);
 
-                Log.d(TAG,
+                Log.e(TAG,
+                        "contentDescription = "
+                                + result.contentDescription);
+
+                Log.e(TAG,
                         "viewId = "
                                 + result.viewId);
 
-                Log.d(TAG,
+                Log.e(TAG,
                         "bounds = "
                                 + result.left + ","
-                                + result.top + " - "
+                                + result.top
+                                + " - "
                                 + result.right + ","
                                 + result.bottom);
 
-                Log.d(TAG,
+                Log.e(TAG,
                         "width = "
                                 + (result.right - result.left));
 
-                Log.d(TAG,
+                Log.e(TAG,
                         "height = "
                                 + (result.bottom - result.top));
 
             } else {
 
-                Log.d(TAG,
+                Log.e(TAG,
                         "No obvious toolbar/address node found.");
             }
 
@@ -400,10 +428,10 @@ public class BraveToolbarService extends AccessibilityService {
 
             showDiagnosticOverlay();
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "=== inspectBrave() END ===");
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "================================================");
 
         } catch (Exception e) {
@@ -466,10 +494,6 @@ public class BraveToolbarService extends AccessibilityService {
                                     + viewId
                     ).toLowerCase();
 
-            // ----------------------------------------------------
-            // Log potentially relevant nodes
-            // ----------------------------------------------------
-
             boolean interesting =
                     combined.contains("address")
                             || combined.contains("url")
@@ -481,40 +505,36 @@ public class BraveToolbarService extends AccessibilityService {
 
             if (interesting) {
 
-                Log.d(TAG,
+                Log.e(TAG,
                         "NODE #"
                                 + nodeCounter
                                 + " depth="
                                 + depth);
 
-                Log.d(TAG,
+                Log.e(TAG,
                         "  class = "
                                 + className);
 
-                Log.d(TAG,
+                Log.e(TAG,
                         "  text = "
                                 + text);
 
-                Log.d(TAG,
+                Log.e(TAG,
                         "  contentDescription = "
                                 + contentDescription);
 
-                Log.d(TAG,
+                Log.e(TAG,
                         "  viewId = "
                                 + viewId);
 
-                Log.d(TAG,
+                Log.e(TAG,
                         "  bounds = "
                                 + bounds);
 
-                Log.d(TAG,
+                Log.e(TAG,
                         "  childCount = "
                                 + node.getChildCount());
             }
-
-            // ----------------------------------------------------
-            // Detect likely address / toolbar node
-            // ----------------------------------------------------
 
             if (combined.contains("address")
                     || combined.contains("omnibox")
@@ -532,10 +552,6 @@ public class BraveToolbarService extends AccessibilityService {
                         bounds.bottom
                 );
             }
-
-            // ----------------------------------------------------
-            // Traverse children
-            // ----------------------------------------------------
 
             int childCount =
                     node.getChildCount();
@@ -584,42 +600,31 @@ public class BraveToolbarService extends AccessibilityService {
 
     private void showDiagnosticOverlay() {
 
-        Log.d(TAG, "");
-        Log.d(TAG,
+        Log.e(TAG, "");
+        Log.e(TAG,
                 "================================================");
-        Log.d(TAG,
+        Log.e(TAG,
                 "=== showDiagnosticOverlay() START ===");
-        Log.d(TAG,
+        Log.e(TAG,
                 "================================================");
-
-        // --------------------------------------------------------
-        // WindowManager check
-        // --------------------------------------------------------
 
         if (windowManager == null) {
 
             Log.e(TAG,
                     "!!! windowManager = NULL !!!");
 
-            Log.e(TAG,
-                    "Cannot call WindowManager.addView()");
-
             return;
         }
 
-        Log.d(TAG,
+        Log.e(TAG,
                 "windowManager = OK");
-
-        // --------------------------------------------------------
-        // Existing overlay check
-        // --------------------------------------------------------
 
         if (overlay != null) {
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "overlay object already exists");
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "overlay.isAttachedToWindow = "
                             + overlay.isAttachedToWindow());
 
@@ -628,29 +633,25 @@ public class BraveToolbarService extends AccessibilityService {
 
         try {
 
-            // ----------------------------------------------------
-            // Screen information
-            // ----------------------------------------------------
-
             android.util.DisplayMetrics metrics =
                     getResources().getDisplayMetrics();
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "DisplayMetrics:");
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  widthPixels = "
                             + metrics.widthPixels);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  heightPixels = "
                             + metrics.heightPixels);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  density = "
                             + metrics.density);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  densityDpi = "
                             + metrics.densityDpi);
 
@@ -661,7 +662,7 @@ public class BraveToolbarService extends AccessibilityService {
             overlay =
                     new View(this);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "overlay View object created");
 
             // ----------------------------------------------------
@@ -677,13 +678,8 @@ public class BraveToolbarService extends AccessibilityService {
                     )
             );
 
-            Log.d(TAG,
-                    "overlay background = "
-                            + "RED alpha=190");
-
-            // ----------------------------------------------------
-            // Position
-            // ----------------------------------------------------
+            Log.e(TAG,
+                    "overlay background = RED alpha=190");
 
             int top =
                     dpToPx(24);
@@ -691,37 +687,30 @@ public class BraveToolbarService extends AccessibilityService {
             int height =
                     dpToPx(64);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "Overlay dimensions:");
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  width = MATCH_PARENT");
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  height = "
                             + height
                             + " px");
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  top = "
                             + top
                             + " px");
-
-            // ----------------------------------------------------
-            // Window parameters
-            // ----------------------------------------------------
 
             WindowManager.LayoutParams params =
                     new WindowManager.LayoutParams(
                             WindowManager.LayoutParams.MATCH_PARENT,
                             height,
-
                             WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-
                             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                                     | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
                                     | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-
                             android.graphics.PixelFormat.TRANSLUCENT
                     );
 
@@ -731,32 +720,32 @@ public class BraveToolbarService extends AccessibilityService {
             params.x = 0;
             params.y = top;
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "Window LayoutParams created:");
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  type = TYPE_ACCESSIBILITY_OVERLAY");
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  gravity = TOP | LEFT");
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  flags = "
                             + params.flags);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  x = "
                             + params.x);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  y = "
                             + params.y);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  width = "
                             + params.width);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "  height = "
                             + params.height);
 
@@ -771,10 +760,10 @@ public class BraveToolbarService extends AccessibilityService {
                         public void onViewAttachedToWindow(
                                 View v) {
 
-                            Log.d(TAG,
+                            Log.e(TAG,
                                     "!!! VIEW ATTACHED TO WINDOW !!!");
 
-                            Log.d(TAG,
+                            Log.e(TAG,
                                     "isAttachedToWindow = "
                                             + v.isAttachedToWindow());
                         }
@@ -783,10 +772,10 @@ public class BraveToolbarService extends AccessibilityService {
                         public void onViewDetachedFromWindow(
                                 View v) {
 
-                            Log.d(TAG,
+                            Log.e(TAG,
                                     "!!! VIEW DETACHED FROM WINDOW !!!");
 
-                            Log.d(TAG,
+                            Log.e(TAG,
                                     "isAttachedToWindow = "
                                             + v.isAttachedToWindow());
                         }
@@ -794,16 +783,15 @@ public class BraveToolbarService extends AccessibilityService {
             );
 
             // ----------------------------------------------------
-            // IMPORTANT:
-            // addView()
+            // ADD VIEW
             // ----------------------------------------------------
 
-            Log.d(TAG, "");
-            Log.d(TAG,
+            Log.e(TAG, "");
+            Log.e(TAG,
                     "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            Log.d(TAG,
+            Log.e(TAG,
                     "CALLING WindowManager.addView()");
-            Log.d(TAG,
+            Log.e(TAG,
                     "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
             windowManager.addView(
@@ -815,24 +803,24 @@ public class BraveToolbarService extends AccessibilityService {
             // SUCCESS
             // ----------------------------------------------------
 
-            Log.d(TAG, "");
-            Log.d(TAG,
+            Log.e(TAG, "");
+            Log.e(TAG,
                     "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            Log.d(TAG,
+            Log.e(TAG,
                     "!!! OVERLAY ADD SUCCESS !!!");
-            Log.d(TAG,
+            Log.e(TAG,
                     "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "overlay = "
                             + overlay);
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "isAttachedToWindow = "
                             + overlay.isAttachedToWindow());
 
             // ----------------------------------------------------
-            // Check again after UI thread processes attach
+            // POST CHECK
             // ----------------------------------------------------
 
             handler.postDelayed(
@@ -849,30 +837,30 @@ public class BraveToolbarService extends AccessibilityService {
                                 return;
                             }
 
-                            Log.d(TAG,
+                            Log.e(TAG,
                                     "=== OVERLAY POST-CHECK ===");
 
-                            Log.d(TAG,
+                            Log.e(TAG,
                                     "overlay = "
                                             + overlay);
 
-                            Log.d(TAG,
+                            Log.e(TAG,
                                     "isAttachedToWindow = "
                                             + overlay.isAttachedToWindow());
 
-                            Log.d(TAG,
+                            Log.e(TAG,
                                     "visibility = "
                                             + overlay.getVisibility());
 
-                            Log.d(TAG,
+                            Log.e(TAG,
                                     "alpha = "
                                             + overlay.getAlpha());
 
-                            Log.d(TAG,
+                            Log.e(TAG,
                                     "width = "
                                             + overlay.getWidth());
 
-                            Log.d(TAG,
+                            Log.e(TAG,
                                     "height = "
                                             + overlay.getHeight());
 
@@ -883,7 +871,7 @@ public class BraveToolbarService extends AccessibilityService {
                                     location
                             );
 
-                            Log.d(TAG,
+                            Log.e(TAG,
                                     "screen location = "
                                             + location[0]
                                             + ","
@@ -934,10 +922,10 @@ public class BraveToolbarService extends AccessibilityService {
             overlay = null;
         }
 
-        Log.d(TAG,
+        Log.e(TAG,
                 "=== showDiagnosticOverlay() END ===");
 
-        Log.d(TAG,
+        Log.e(TAG,
                 "================================================");
     }
 
@@ -947,12 +935,12 @@ public class BraveToolbarService extends AccessibilityService {
 
     private void removeOverlay() {
 
-        Log.d(TAG,
+        Log.e(TAG,
                 "=== removeOverlay() ===");
 
         if (overlay == null) {
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "overlay = NULL -> nothing to remove");
 
             return;
@@ -970,10 +958,10 @@ public class BraveToolbarService extends AccessibilityService {
 
         try {
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "Removing overlay...");
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "isAttachedToWindow before remove = "
                             + overlay.isAttachedToWindow());
 
@@ -981,7 +969,7 @@ public class BraveToolbarService extends AccessibilityService {
                     overlay
             );
 
-            Log.d(TAG,
+            Log.e(TAG,
                     "Overlay removed successfully");
 
         } catch (Exception e) {
@@ -1019,13 +1007,12 @@ public class BraveToolbarService extends AccessibilityService {
     @Override
     public void onInterrupt() {
 
-        Log.d(TAG,
+        Log.e(TAG, "");
+        Log.e(TAG,
                 "================================================");
-
-        Log.d(TAG,
+        Log.e(TAG,
                 "=== SERVICE INTERRUPTED ===");
-
-        Log.d(TAG,
+        Log.e(TAG,
                 "================================================");
 
         removeOverlay();
@@ -1038,14 +1025,16 @@ public class BraveToolbarService extends AccessibilityService {
     @Override
     public void onDestroy() {
 
-        Log.d(TAG,
+        Log.e(TAG, "");
+        Log.e(TAG,
                 "================================================");
-
-        Log.d(TAG,
+        Log.e(TAG,
                 "=== SERVICE DESTROYED ===");
-
-        Log.d(TAG,
+        Log.e(TAG,
                 "================================================");
+
+        Log.e(TAG,
+                "PROCESS ID = " + android.os.Process.myPid());
 
         removeOverlay();
 
